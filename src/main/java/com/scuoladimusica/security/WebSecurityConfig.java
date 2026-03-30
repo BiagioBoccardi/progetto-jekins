@@ -53,21 +53,24 @@ public class WebSecurityConfig {
     }
 
     @Bean
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable)
-                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
-                .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/h2-console/**").permitAll()
-                        .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/api-docs/**", "/v3/api-docs/**").permitAll()
-                        .anyRequest().authenticated()
-                );
-
-        http.authenticationProvider(authenticationProvider());
-        http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
-
+        http
+            .csrf(csrf -> csrf.disable()) // (o la tua configurazione CORS/CSRF)
+            // ... altre configurazioni jwt ...
+            .authorizeHttpRequests(auth -> auth
+                // AGGIUNGI QUESTA RIGA PER SBLOCCARE SWAGGER:
+                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/api-docs/**").permitAll()
+                
+                // Sicuramente avrai già una riga simile per permettere il login/registrazione:
+                .requestMatchers("/api/auth/**").permitAll()
+                
+                // Tutto il resto richiede di essere loggati:
+                .anyRequest().authenticated()
+            );
+        
+        // ... (aggiunta del filtro JWT, ecc.)
+        
         return http.build();
     }
 }
