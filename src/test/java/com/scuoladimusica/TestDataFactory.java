@@ -234,6 +234,11 @@ public class TestDataFactory {
                 .student(student)
                 .dataInizio(inizio)
                 .build();
+        
+        // <-- MODIFICA APPLICATA: Quando forziamo un prestito nei test, lo strumento diventa indisponibile
+        instrument.setDisponibile(false);
+        instrumentRepository.save(instrument);
+        
         return loanRepository.save(loan);
     }
 
