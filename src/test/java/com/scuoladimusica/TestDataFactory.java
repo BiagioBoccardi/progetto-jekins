@@ -1,13 +1,30 @@
 package com.scuoladimusica;
 
-import com.scuoladimusica.model.entity.*;
-import com.scuoladimusica.repository.*;
+import java.time.LocalDate;
+import java.util.ArrayList;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
-import java.util.Set;
+import com.scuoladimusica.model.entity.Course;
+import com.scuoladimusica.model.entity.Enrollment;
+import com.scuoladimusica.model.entity.Instrument;
+import com.scuoladimusica.model.entity.Lesson;
+import com.scuoladimusica.model.entity.Livello;
+import com.scuoladimusica.model.entity.Loan;
+import com.scuoladimusica.model.entity.Student;
+import com.scuoladimusica.model.entity.Teacher;
+import com.scuoladimusica.model.entity.TipoStrumento;
+import com.scuoladimusica.repository.CourseRepository;
+import com.scuoladimusica.repository.EnrollmentRepository;
+import com.scuoladimusica.repository.InstrumentRepository;
+import com.scuoladimusica.repository.LessonRepository;
+import com.scuoladimusica.repository.LoanRepository;
+import com.scuoladimusica.repository.RoleRepository;
+import com.scuoladimusica.repository.StudentRepository;
+import com.scuoladimusica.repository.TeacherRepository;
+import com.scuoladimusica.repository.UserRepository;
 
 /**
  * Factory per creare dati di test riutilizzabili.
@@ -152,6 +169,7 @@ public class TestDataFactory {
                 .tipoStrumento(tipo)
                 .marca(marca)
                 .annoProduzione(anno)
+                .disponibile(true) // <-- MODIFICA APPLICATA
                 .build();
         return instrumentRepository.save(instrument);
     }
@@ -179,7 +197,15 @@ public class TestDataFactory {
                 .course(course)
                 .annoIscrizione(anno)
                 .build();
-        return enrollmentRepository.save(enrollment);
+        Enrollment saved = enrollmentRepository.save(enrollment);
+        
+        // <-- MODIFICA APPLICATA: Sincronizza la relazione bidirezionale in memoria
+        if (student.getEnrollments() == null) {
+            student.setEnrollments(new ArrayList<>());
+        }
+        student.getEnrollments().add(saved);
+        
+        return saved;
     }
 
     public Enrollment creaIscrizioneConVoto(Student student, Course course, int anno, int voto) {
@@ -189,7 +215,15 @@ public class TestDataFactory {
                 .annoIscrizione(anno)
                 .votoFinale(voto)
                 .build();
-        return enrollmentRepository.save(enrollment);
+        Enrollment saved = enrollmentRepository.save(enrollment);
+        
+        // <-- MODIFICA APPLICATA: Sincronizza la relazione bidirezionale in memoria
+        if (student.getEnrollments() == null) {
+            student.setEnrollments(new ArrayList<>());
+        }
+        student.getEnrollments().add(saved);
+        
+        return saved;
     }
 
     // ========== PRESTITI ==========

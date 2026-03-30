@@ -129,7 +129,7 @@ class TeacherControllerTest {
             dati.creaInsegnantePredefinito();
 
             TeacherRequest request = new TeacherRequest(
-                    "I001", "ALTROCF12345678AB", "Altro", "Nome",
+                    "I001", "ALTROCF12345678X", "Altro", "Nome",
                     LocalDate.of(1985, 5, 5), null, 2000.0, "Violino", 5);
 
             mockMvc.perform(post("/api/teachers")
